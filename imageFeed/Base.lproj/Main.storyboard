@@ -207,9 +207,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="L6G-8z-VJV">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Y4-jD-0Zf">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                            </imageView>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="L6G-8z-VJV">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="brq-oI-XvF"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="Yqp-Wh-qWR"/>
+                                <connections>
+                                    <outlet property="delegate" destination="W4a-VW-7Q5" id="dRG-Sc-7Qf"/>
+                                </connections>
+                            </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGq-Wa-K6K">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
                                 <constraints>
@@ -226,12 +237,12 @@
                         <viewLayoutGuide key="safeArea" id="KlU-1O-dwD"/>
                         <color key="backgroundColor" red="0.1019607843" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="L6G-8z-VJV" secondAttribute="bottom" id="NQL-8z-RyC"/>
-                            <constraint firstItem="L6G-8z-VJV" firstAttribute="leading" secondItem="jj3-6d-3Dp" secondAttribute="leading" id="V11-KD-2se"/>
+                            <constraint firstItem="0Y4-jD-0Zf" firstAttribute="top" secondItem="jj3-6d-3Dp" secondAttribute="top" id="1fw-zI-T6b"/>
+                            <constraint firstAttribute="bottom" secondItem="0Y4-jD-0Zf" secondAttribute="bottom" id="AyS-Uj-Huo"/>
                             <constraint firstItem="KGq-Wa-K6K" firstAttribute="leading" secondItem="KlU-1O-dwD" secondAttribute="leading" constant="8" id="ZtY-7m-33A"/>
                             <constraint firstItem="KGq-Wa-K6K" firstAttribute="top" secondItem="KlU-1O-dwD" secondAttribute="top" constant="8" id="cEI-R7-9rR"/>
-                            <constraint firstAttribute="trailing" secondItem="L6G-8z-VJV" secondAttribute="trailing" id="pon-PR-SKq"/>
-                            <constraint firstItem="L6G-8z-VJV" firstAttribute="top" secondItem="jj3-6d-3Dp" secondAttribute="top" id="ulc-av-4jH"/>
+                            <constraint firstItem="0Y4-jD-0Zf" firstAttribute="leading" secondItem="KlU-1O-dwD" secondAttribute="leading" id="egQ-mw-6dG"/>
+                            <constraint firstItem="KlU-1O-dwD" firstAttribute="trailing" secondItem="0Y4-jD-0Zf" secondAttribute="trailing" id="jfw-8l-dxk"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="DED-3y-RPn"/>
@@ -241,7 +252,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tET-27-TYK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="939" y="-35"/>
+            <point key="canvasLocation" x="937.68115942028987" y="-35.491071428571423"/>
         </scene>
     </scenes>
     <resources>
