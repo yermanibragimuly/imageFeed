@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		2D633F5A2C049E420057BFFD /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D633F592C049E420057BFFD /* ProfileViewController.swift */; };
 		2D633F632C050FFB0057BFFD /* SingleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D633F622C050FFB0057BFFD /* SingleImageViewController.swift */; };
-		2D633F672C0E482D0057BFFD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D633F662C0E482D0057BFFD /* Constants.swift */; };
 		2D633F6A2C103F650057BFFD /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D633F692C103F650057BFFD /* AuthViewController.swift */; };
 		2D633F6C2C1068A10057BFFD /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D633F6B2C1068A10057BFFD /* WebViewController.swift */; };
+		2D633F6E2C175EAF0057BFFD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D633F6D2C175EAF0057BFFD /* Constants.swift */; };
 		2DE862592BE5697100C9B5F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE862582BE5697100C9B5F8 /* AppDelegate.swift */; };
 		2DE8625B2BE5697100C9B5F8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8625A2BE5697100C9B5F8 /* SceneDelegate.swift */; };
 		2DE8625D2BE5697100C9B5F8 /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE8625C2BE5697100C9B5F8 /* ImagesListViewController.swift */; };
@@ -45,9 +45,9 @@
 /* Begin PBXFileReference section */
 		2D633F592C049E420057BFFD /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2D633F622C050FFB0057BFFD /* SingleImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleImageViewController.swift; sourceTree = "<group>"; };
-		2D633F662C0E482D0057BFFD /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2D633F692C103F650057BFFD /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		2D633F6B2C1068A10057BFFD /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		2D633F6D2C175EAF0057BFFD /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2DE862552BE5697100C9B5F8 /* imageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DE862582BE5697100C9B5F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2DE8625A2BE5697100C9B5F8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 			children = (
 				2DE862582BE5697100C9B5F8 /* AppDelegate.swift */,
 				2DE8625A2BE5697100C9B5F8 /* SceneDelegate.swift */,
-				2D633F662C0E482D0057BFFD /* Constants.swift */,
+				2D633F6D2C175EAF0057BFFD /* Constants.swift */,
 				2D633F612C050FBC0057BFFD /* SingleImageViewController */,
 				2D633F582C049E1A0057BFFD /* Profile */,
 				2DE862CC2BF3F24C00C9B5F8 /* ImagesList */,
@@ -316,11 +316,11 @@
 				2DE862CB2BF3F1BB00C9B5F8 /* ImagesListCell.swift in Sources */,
 				2D633F6C2C1068A10057BFFD /* WebViewController.swift in Sources */,
 				2D633F632C050FFB0057BFFD /* SingleImageViewController.swift in Sources */,
+				2D633F6E2C175EAF0057BFFD /* Constants.swift in Sources */,
 				2D633F5A2C049E420057BFFD /* ProfileViewController.swift in Sources */,
 				2DE862592BE5697100C9B5F8 /* AppDelegate.swift in Sources */,
 				2DE8625B2BE5697100C9B5F8 /* SceneDelegate.swift in Sources */,
 				2D633F6A2C103F650057BFFD /* AuthViewController.swift in Sources */,
-				2D633F672C0E482D0057BFFD /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

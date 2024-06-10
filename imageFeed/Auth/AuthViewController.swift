@@ -20,6 +20,17 @@ final class AuthViewController: UIViewController {
         
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == ShowWebViewSegueIdentifier {
+            guard
+                let webViewViewController = segue.destination as? WebViewController
+            else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
+            webViewViewController.delegate = self
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
+    
     private func setupAuthorizationLogoImageView() {
         let autorizationLogo = UIImage(named: "auth_screen_logo")
         let imageView = UIImageView(image: autorizationLogo)
@@ -34,4 +45,14 @@ final class AuthViewController: UIViewController {
         self.authorizationLogoImageView = imageView
     }
     
+}
+
+extension AuthViewController: WebViewViewControllerDelegate {
+    func webViewViewController(_ vc: WebViewController, didAuthenticateWithCode code: String) {
+        //TODO: process code
+    }
+    
+    func webViewViewControllerDidCancel(_ vc: WebViewController) {
+        dismiss(animated: true)
+    }
 }
