@@ -7,8 +7,18 @@
 
 import UIKit
 
+//MARK: - AuthViewControllerDelegate
+protocol AuthViewControllerDelegate: AnyObject {
+    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+}
+
+//MARK: - AuthViewController
 final class AuthViewController: UIViewController {
     
+    //MARK: - Public Properties
+    weak var delegate: AuthViewControllerDelegate?
+    
+    //MARK: - Private properties
     private let ShowWebViewSegueIdentifier = "ShowWebView"
     
     private var authorizationLogoImageView: UIImageView?
@@ -20,6 +30,8 @@ final class AuthViewController: UIViewController {
         
     }
     
+    
+    //MARK: - Override Methods
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == ShowWebViewSegueIdentifier {
             guard
@@ -47,12 +59,15 @@ final class AuthViewController: UIViewController {
     
 }
 
+//MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
-    func webViewViewController(_ vc: WebViewController, didAuthenticateWithCode code: String) {
-        //TODO: process code
+    
+    //MARK: - Public Methods
+    func webViewViewControllerDidCancel(_ vc: WebViewController) {
+        navigationController?.popViewController(animated: true)
     }
     
-    func webViewViewControllerDidCancel(_ vc: WebViewController) {
-        dismiss(animated: true)
+    func webViewViewController(_ vc: WebViewController, didAuthenticateWithCode code: String) {
+        delegate?.authViewController(self, didAuthenticateWithCode: code)
     }
 }
