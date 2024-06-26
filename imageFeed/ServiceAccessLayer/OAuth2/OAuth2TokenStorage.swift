@@ -24,4 +24,9 @@ final class OAuth2TokenStorage {
     
     //MARK: - Private Properties
     private let userDefaults = UserDefaults.standard
+    
+    func clearToken() {
+        userDefaults.removeObject(forKey: "accessToken")
+        userDefaults.synchronize()
+    }
 }
