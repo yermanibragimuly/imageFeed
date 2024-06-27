@@ -21,10 +21,6 @@ final class WebViewController: UIViewController {
     
     weak var delegate: WebViewViewControllerDelegate?
     
-    enum WebViewConstants {
-        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
@@ -53,7 +49,11 @@ final class WebViewController: UIViewController {
         webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
     }
 
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    override func observeValue(forKeyPath keyPath: String?, 
+                               of object: Any?,
+                               change: [NSKeyValueChangeKey : Any]?,
+                               context: UnsafeMutableRawPointer?
+    ) {
         if keyPath == #keyPath(WKWebView.estimatedProgress) {
             updateProgress()
         } else {

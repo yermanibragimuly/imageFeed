@@ -20,7 +20,7 @@ final class AuthViewController: UIViewController {
     
     //MARK: - Private properties
     private let ShowWebViewSegueIdentifier = "ShowWebView"
-    
+    private let oauth2Service = OAuth2Service.shared
     private var authorizationLogoImageView: UIImageView?
     
     override func viewDidLoad() {

@@ -13,11 +13,11 @@
             <objects>
                 <viewController title="ImageList" id="BYZ-38-t0r" customClass="ImagesListViewController" customModule="imageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="886"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="NKc-tt-1VG">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="886"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ImagesListCell" rowHeight="245" id="rJ2-qB-3oH" customClass="ImagesListCell" customModule="imageFeed" customModuleProvider="target">
@@ -105,7 +105,7 @@
             <objects>
                 <viewController id="McU-kJ-yiT" userLabel="Profile" customClass="ProfileViewController" customModule="imageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vNe-ho-vKf">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="886"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="8OH-K4-ZMP"/>
                         <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
@@ -120,7 +120,7 @@
         <!--Splash View Controller-->
         <scene sceneID="f0o-Gn-lJB">
             <objects>
-                <viewController id="MbB-U5-3Xa" customClass="SplashViewController" customModule="imageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SplashViewController" id="MbB-U5-3Xa" customClass="SplashViewController" customModule="imageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5jN-9d-xHM">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -141,7 +141,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <segue destination="OZH-v3-lCB" kind="show" identifier="showImageListScreen" id="yyA-CC-p3w"/>
                         <segue destination="JOo-dw-kXP" kind="show" identifier="ShowAuthenticationScreen" id="gAg-pc-AUI"/>
                     </connections>
                 </viewController>
@@ -152,7 +151,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="Xal-Nk-GVr">
             <objects>
-                <tabBarController id="OZH-v3-lCB" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="TabBarViewController" id="OZH-v3-lCB" customClass="TabBarController" customModule="imageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="iTm-G6-DTE"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="UjX-91-IDj">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
