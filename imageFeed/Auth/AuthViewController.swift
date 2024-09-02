@@ -1,73 +1,73 @@
-//
-//  AuthViewController.swift
-//  imageFeed
-//
-//  Created by Yerman Ibragimuly on 05.06.2024.
-//
-
 import UIKit
+import ProgressHUD
 
-//MARK: - AuthViewControllerDelegate
 protocol AuthViewControllerDelegate: AnyObject {
-    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+    func didAuthenticate(_ vc: AuthViewController)
+    func fetchProfile(_ token: String)
 }
 
-//MARK: - AuthViewController
 final class AuthViewController: UIViewController {
     
-    //MARK: - Public Properties
-    weak var delegate: AuthViewControllerDelegate?
-    
-    //MARK: - Private properties
     private let ShowWebViewSegueIdentifier = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
-    private var authorizationLogoImageView: UIImageView?
+
+    weak var delegate: AuthViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupAuthorizationLogoImageView()
-        
+        setupBackButtonAppearance()
     }
-    
-    
-    //MARK: - Override Methods
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == ShowWebViewSegueIdentifier {
-            guard
-                let webViewViewController = segue.destination as? WebViewController
-            else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
-            webViewViewController.delegate = self
-        } else {
+        guard segue.identifier == ShowWebViewSegueIdentifier else {
             super.prepare(for: segue, sender: sender)
+            return
         }
+        guard
+            let webViewViewController = segue.destination as? WebViewViewController
+        else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
+        webViewViewController.delegate = self
     }
     
-    private func setupAuthorizationLogoImageView() {
-        let autorizationLogo = UIImage(named: "auth_screen_logo")
-        let imageView = UIImageView(image: autorizationLogo)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
-        
-        NSLayoutConstraint.activate([
-            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-        
-        self.authorizationLogoImageView = imageView
+    private func setupBackButtonAppearance() {
+        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
+        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "YP Black")
     }
     
+    private func showAlertError() {
+        let alert = UIAlertController(title: "Что-то пошло не так(",
+                                      message: "Не удалось войти в систему",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+            title: "Ок",
+            style: .default))
+        self.present(alert, animated: true)
+    }
 }
 
-//MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
-    
-    //MARK: - Public Methods
-    func webViewViewControllerDidCancel(_ vc: WebViewController) {
-        navigationController?.popViewController(animated: true)
+    func webViewViewController(
+        _ vc: WebViewViewController,
+        didAuthenticateWithCode code: String
+    ) {
+        UIBlockingProgressHUD.show()
+        delegate?.didAuthenticate(self)
+        oauth2Service.fetchOAuthToken(withCode: code) { [weak self] result in
+            guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
+            switch result {
+            case .success(let token):
+                print("Авторизационный токен получен: \(token)")
+                delegate?.fetchProfile(token)
+            case .failure(let error):
+                print("Ошибка получения токена: \(error.localizedDescription)")
+                self.showAlertError()
+            }
+        }
     }
-    
-    func webViewViewController(_ vc: WebViewController, didAuthenticateWithCode code: String) {
-        delegate?.authViewController(self, didAuthenticateWithCode: code)
+    func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
+        dismiss(animated: true)
     }
 }
