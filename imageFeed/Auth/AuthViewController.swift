@@ -1,73 +1,35 @@
+
 import UIKit
-import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
-    func didAuthenticate(_ vc: AuthViewController)
-    func fetchProfile(_ token: String)
+    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
 }
 
 final class AuthViewController: UIViewController {
-    
+    // MARK: - Private Properties
     private let ShowWebViewSegueIdentifier = "ShowWebView"
-    private let oauth2Service = OAuth2Service.shared
-
     weak var delegate: AuthViewControllerDelegate?
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupBackButtonAppearance()
-    }
-
+    // MARK: - Methods
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == ShowWebViewSegueIdentifier else {
+        if segue.identifier == ShowWebViewSegueIdentifier {
+            guard
+                let webViewViewController = segue.destination as? WebViewController
+            else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
+            webViewViewController.delegate = self
+        } else {
             super.prepare(for: segue, sender: sender)
-            return
         }
-        guard
-            let webViewViewController = segue.destination as? WebViewViewController
-        else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
-        webViewViewController.delegate = self
-    }
-    
-    private func setupBackButtonAppearance() {
-        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "YP Black")
-    }
-    
-    private func showAlertError() {
-        let alert = UIAlertController(title: "Что-то пошло не так(",
-                                      message: "Не удалось войти в систему",
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(
-            title: "Ок",
-            style: .default))
-        self.present(alert, animated: true)
     }
 }
 
-extension AuthViewController: WebViewViewControllerDelegate {
-    func webViewViewController(
-        _ vc: WebViewViewController,
-        didAuthenticateWithCode code: String
-    ) {
-        UIBlockingProgressHUD.show()
-        delegate?.didAuthenticate(self)
-        oauth2Service.fetchOAuthToken(withCode: code) { [weak self] result in
-            guard let self = self else { return }
-            UIBlockingProgressHUD.dismiss()
-            switch result {
-            case .success(let token):
-                print("Авторизационный токен получен: \(token)")
-                delegate?.fetchProfile(token)
-            case .failure(let error):
-                print("Ошибка получения токена: \(error.localizedDescription)")
-                self.showAlertError()
-            }
-        }
+// MARK: - WebViewViewControllerDelegate
+extension AuthViewController: WebViewControllerDelegate {
+    func webViewViewController(_ vc: WebViewController, didAuthenticateWithCode code: String) {
+        delegate?.authViewController(self, didAuthenticateWithCode: code)
     }
-    func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
+
+    func webViewViewControllerDidCancel(_ vc: WebViewController) {
         dismiss(animated: true)
     }
 }
