@@ -1,68 +1,79 @@
+
 import UIKit
 import WebKit
 
-protocol WebViewViewControllerDelegate: AnyObject {
-    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-    func webViewViewControllerDidCancel(_ vc: WebViewViewController)
+
+fileprivate let UnsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+
+protocol WebViewControllerDelegate: AnyObject {
+    func webViewViewController(_ vc: WebViewController, didAuthenticateWithCode code: String)
+    func webViewViewControllerDidCancel(_ vc: WebViewController)
 }
 
-final class WebViewViewController: UIViewController {
+final class WebViewController: UIViewController {
     
-    private var estimatedProgressObservation: NSKeyValueObservation?
-    
+    // MARK: - IB Outlets
+    @IBOutlet private var webView: WKWebView!
     @IBOutlet private weak var progressView: UIProgressView!
-    @IBOutlet private weak var webView: WKWebView!
     
-    weak var delegate: WebViewViewControllerDelegate?
+    //MARK: - Properties
+    weak var delegate: WebViewControllerDelegate?
+    private var estimatedProgressObservation: NSKeyValueObservation?
+    private var alertPresenter: AlertPresenterProtocol?
     
+    // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         webView.navigationDelegate = self
         
-        var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString)!
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: Constants.accessScope)
-        ]
-        
-        let url = urlComponents.url!
-        
-        let request = URLRequest(url: url)
-        webView.load(request)
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
-             options: [.new],
+             options: [],
              changeHandler: { [weak self] _, _ in
-                 self?.updateProgress()
+                 guard let self = self else { return }
+                 self.updateProgress()
              })
-    }
-    
-    @IBAction private func didTapBackButton(_ sender: Any?) {
-        delegate?.webViewViewControllerDidCancel(self)
+        
+        var urlComponents = URLComponents(string: KeyAndUrl.unsplashAuthorizeUrlString)!
+        urlComponents.queryItems = [
+            URLQueryItem(name: "client_id", value: KeyAndUrl.accessKey),
+            URLQueryItem(name: "redirect_uri", value: KeyAndUrl.redirectUrl),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: KeyAndUrl.accessScope)
+        ]
+        
+        guard let url = urlComponents.url else { return }
+        let request = URLRequest(url: url)
+        
+        webView.load(request)
+        
+        updateProgress()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        webView.addObserver(self,
-                            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-                            options: .new,
-                            context: nil)
+        
+        webView.addObserver(
+            self,
+            forKeyPath: #keyPath(WKWebView.estimatedProgress),
+            options: .new,
+            context: nil)
         updateProgress()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        webView.removeObserver(self, 
-                               forKeyPath: #keyPath(WKWebView.estimatedProgress),
-                               context: nil)
+        webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
     }
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
+    // MARK: - IB Actions
+    @IBAction private func didTapBackButton(_ sender: Any) {
+        delegate?.webViewViewControllerDidCancel(self)
+    }
+    
+    // MARK: - Methods
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == #keyPath(WKWebView.estimatedProgress) {
             updateProgress()
         } else {
@@ -70,20 +81,24 @@ final class WebViewViewController: UIViewController {
         }
     }
     
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        showAlert()
+    }
+
     private func updateProgress() {
         progressView.progress = Float(webView.estimatedProgress)
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
     }
 }
-
-extension WebViewViewController: WKNavigationDelegate {
+// MARK: - WKNavigationDelegate
+extension WebViewController: WKNavigationDelegate {
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
         if let code = code(from: navigationAction) {
-            self.delegate?.webViewViewController(self, didAuthenticateWithCode: code)
+            delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
         } else {
             decisionHandler(.allow)
@@ -101,6 +116,31 @@ extension WebViewViewController: WKNavigationDelegate {
             return codeItem.value
         } else {
             return nil
+        }
+    }
+}
+
+//MARK: - AlertPresenter
+extension WebViewController {
+    private func showAlert() {
+        let alert = AlertModel(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            buttonText: "Ок",
+            completion: { [weak self] in
+                guard let self = self else { return }
+                dismiss(animated: true)
+            })
+        alertPresenter = AlertPresenter(delegate: self)
+        alertPresenter?.showAlert(for: alert)
+    }
+    
+    static func clean() {
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            records.forEach { record in
+                WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+            }
         }
     }
 }
