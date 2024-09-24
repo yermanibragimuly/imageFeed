@@ -18,7 +18,6 @@ final class ImageFeedUITests: XCTestCase {
     }
     
     func testAuth() throws {
-        // тестируем сценарий авторизации
         let loginButton = app.buttons["Authenticate"]
         XCTAssertTrue(loginButton.waitForExistence(timeout: 10))
         loginButton.tap()
@@ -51,7 +50,6 @@ final class ImageFeedUITests: XCTestCase {
     }
     
     func testFeed() throws {
-        // тестируем сценарий ленты
         let tablesQuery = app.tables
         
         let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
@@ -85,7 +83,6 @@ final class ImageFeedUITests: XCTestCase {
     }
     
     func testProfile() throws {
-        // тестируем сценарий профиля
         let profileTab = app.tabBars.buttons.element(boundBy: 1)
         XCTAssertTrue(profileTab.waitForExistence(timeout: 10))
         profileTab.tap()
