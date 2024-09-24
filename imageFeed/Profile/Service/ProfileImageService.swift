@@ -51,7 +51,7 @@ final class ProfileImageService {
         urlComponents.scheme = "https"
         urlComponents.host = "api.unsplash.com"
         urlComponents.path = "/users/\(username)"
-        urlComponents.queryItems = [URLQueryItem(name: "client_id", value: AccessKey)]
+        urlComponents.queryItems = [URLQueryItem(name: "client_id", value: AuthConfiguration.standard.accessKey)]
 
         guard let url = urlComponents.url else {
             fatalError("Failed to create Avatar URL")

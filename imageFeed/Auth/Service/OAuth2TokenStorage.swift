@@ -10,11 +10,11 @@ final class OAuth2TokenStorage {
 
     var token: String? {
         get {
-            return keyChainWrapper.string(forKey: TokenKey)
+            return keyChainWrapper.string(forKey: AuthConfiguration.standard.tokenKey)
         }
         set {
             guard let newValue = newValue  else { return }
-            keyChainWrapper.set(newValue, forKey: TokenKey)
+            keyChainWrapper.set(newValue, forKey: AuthConfiguration.standard.tokenKey)
         }
     }
 }

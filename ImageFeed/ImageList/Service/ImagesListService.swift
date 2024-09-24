@@ -19,7 +19,7 @@ final class ImageListService {
 
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
-        let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+        let nextPage = (lastLoadedPage ?? 0) + 1
         guard let request = makeFetchPhotosRequest(page: nextPage) else {
             assertionFailure("Invalid request")
             return
@@ -72,7 +72,7 @@ extension ImageListService {
         guard let token = OAuth2TokenStorage.shared.token else {
             fatalError("Failed to create URL")
         }
-        let baseUrl = DefaultBaseURL
+        let baseUrl = AuthConfiguration.standard.baseURL
         let url = baseUrl.appendingPathComponent("photos")
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         components?.queryItems = [

@@ -3,10 +3,10 @@ import XCTest
 
 final class ImageFeedUITests: XCTestCase {
     
-    let yourEmail = ""
-    let yourPassword = ""
-    let yourFullName = ""
-    let yourUserName = ""
+    let yourEmail = "yerman.ibragimuly@gmail.com"
+    let yourPassword = "Nevermore1394@"
+    let yourFullName = "Yerman Ibragimuly"
+    let yourUserName = "@yermanibragimuly"
     
     private let app = XCUIApplication()
     
@@ -16,6 +16,7 @@ final class ImageFeedUITests: XCTestCase {
     }
     
     func testAuth() throws {
+        XCTAssertTrue(app.buttons["Authenticate"].waitForExistence(timeout: 6))
         app.buttons["Authenticate"].tap()
         
         let webView = app.webViews["UnsplashWebView"]
