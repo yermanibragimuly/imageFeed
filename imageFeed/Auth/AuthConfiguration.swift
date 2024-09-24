@@ -10,17 +10,16 @@ struct AuthConfiguration {
     let accessScope: String
     let baseURL: URL
     let tokenKey: String
-    var authURLString: String {
-            return "https://unsplash.com/oauth/authorize"
-        }
+    let authURLString: String
 
     private init() {
-        self.accessKey = "Q44p1ozbkvY18J9EVE7gkO5tqyRy-YBwZCO8i6VivYQ"
-        self.secretKey = "pSvOi0gGSFm0yWvOn9tLEtKr6JOEHSmJDDwMHiPoD3g"
+        self.accessKey = "CEryCnXH3ayPotJAzlhz3kFZveRcxNTlNB60nKlelG4"
+        self.secretKey = "ESQKfWSaxeg_mPBiruMLJqetq-pakEYgvTo6Z5PE7BUs"
         self.redirectURI = "urn:ietf:wg:oauth:2.0:oob"
         self.accessScope = "public+read_user+write_likes+write_user"
         self.baseURL = URL(string: "https://api.unsplash.com")!
         self.tokenKey = "ImageFeedOAuth2Token"
+        self.authURLString = "https://unsplash.com/oauth/authorize"
     }
 }
 
