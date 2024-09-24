@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2DB3F4AF2CA2A8D70039FCDB /* WebViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB3F4AE2CA2A8CF0039FCDB /* WebViewPresenter.swift */; };
 		60069AEC2B3B6406004F6686 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 60069AEB2B3B6406004F6686 /* ProgressHUD */; };
 		60069AEE2B3B6EA1004F6686 /* UIBlockingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60069AED2B3B6EA1004F6686 /* UIBlockingProgressHUD.swift */; };
 		60069AF02B3B717A004F6686 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60069AEF2B3B717A004F6686 /* ProfileService.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2DB3F4AE2CA2A8CF0039FCDB /* WebViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPresenter.swift; sourceTree = "<group>"; };
 		60069AED2B3B6EA1004F6686 /* UIBlockingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBlockingProgressHUD.swift; sourceTree = "<group>"; };
 		60069AEF2B3B717A004F6686 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		60069AF12B3B77C4004F6686 /* ProfileImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageService.swift; sourceTree = "<group>"; };
@@ -89,6 +91,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2DB3F4AD2CA2A88E0039FCDB /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				609997CE2B21163F0011EB95 /* AuthViewController.swift */,
+				602884EC2B2117F6007F1B08 /* WebViewViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		60069AFB2B3BE108004F6686 /* TabBarController */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,8 +217,8 @@
 		609997CD2B2116250011EB95 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
-				609997CE2B21163F0011EB95 /* AuthViewController.swift */,
-				602884EC2B2117F6007F1B08 /* WebViewViewController.swift */,
+				2DB3F4AE2CA2A8CF0039FCDB /* WebViewPresenter.swift */,
+				2DB3F4AD2CA2A88E0039FCDB /* Controller */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -262,7 +273,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 60459FAB2B050E740097DC47 /* Build configuration list for PBXProject "ImageFeed" */;
+			buildConfigurationList = 60459FAB2B050E740097DC47 /* Build configuration list for PBXProject "imageFeed" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -322,6 +333,7 @@
 				609997CF2B21163F0011EB95 /* AuthViewController.swift in Sources */,
 				60069B042B3BE410004F6686 /* UserResultModel.swift in Sources */,
 				60069B022B3BE3F6004F6686 /* ProfileModel.swift in Sources */,
+				2DB3F4AF2CA2A8D70039FCDB /* WebViewPresenter.swift in Sources */,
 				604F55532B1FA83F00E0C0B4 /* Constants.swift in Sources */,
 				60D9EEA32B1BC8400044DC9B /* SingleImageViewController.swift in Sources */,
 				602884ED2B2117F6007F1B08 /* WebViewViewController.swift in Sources */,
@@ -535,7 +547,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		60459FAB2B050E740097DC47 /* Build configuration list for PBXProject "ImageFeed" */ = {
+		60459FAB2B050E740097DC47 /* Build configuration list for PBXProject "imageFeed" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				60459FC22B050E750097DC47 /* Debug */,
