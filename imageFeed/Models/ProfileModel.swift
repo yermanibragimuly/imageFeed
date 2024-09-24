@@ -3,9 +3,9 @@ import Foundation
 
 public struct Profile {
     let userName: String
-    let name: String
-    let loginName: String
-    let bio: String?
+    public let name: String
+    public let loginName: String
+    public let bio: String?
     
     
     init(callData: ProfileResult) {
