@@ -1,9 +1,3 @@
-//
-//  AuthConfiguration.swift
-//  ImageFeed
-//
-//  Created by Yerman Ibragimuly on 24.09.2024.
-//
 
 import Foundation
 
@@ -24,7 +18,7 @@ struct AuthConfiguration {
     let defaultBaseURL: URL
     let authURLString: String
 
-    init(accessKey: String,
+    init(accessKey: String, 
          secretKey: String,
          redirectURI: String,
          accessScope: String,
@@ -48,3 +42,4 @@ struct AuthConfiguration {
                                  authURLString: UnsplashAuthorizeURLString)
     }
 }
+

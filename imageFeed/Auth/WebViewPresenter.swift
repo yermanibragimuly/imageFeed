@@ -1,9 +1,3 @@
-//
-//  WebViewPresenter.swift
-//  ImageFeed
-//
-//  Created by Yerman Ibragimuly on 24.09.2024.
-//
 
 import Foundation
 
@@ -19,15 +13,15 @@ final class WebViewPresenter: WebViewPresenterProtocol {
     var authHelper: AuthHelperProtocol
 
     init(authHelper: AuthHelperProtocol) {
-            self.authHelper = authHelper
-        }
+        self.authHelper = authHelper
+    }
 
-        func viewDidLoad() {
-            let request = authHelper.authRequest()
-            didUpdateProgressValue(0)
-            view?.load(request: request)
-        }
-
+    func viewDidLoad() {
+        let request = authHelper.authRequest()
+        didUpdateProgressValue(0)
+        view?.load(request: request)
+    }
+    
     func didUpdateProgressValue(_ newValue: Double) {
         let newProgressValue = Float(newValue)
         view?.setProgressValue(newProgressValue)
