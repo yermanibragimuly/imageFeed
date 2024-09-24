@@ -1,138 +1,132 @@
 
 import Foundation
+import Kingfisher
 
-final class ImagesListService {
-    
-    // MARK: - Properties
-    static let shared = ImagesListService()
+final class ImageListService {
+    static let shared = ImageListService()
+    static let DidChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private (set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
-    private var task: URLSessionTask?
-    private let oauth2TokenStorage = OAuth2TokenStorage.shared
-    private let urlSession = URLSession.shared
-    private let dateFormatter = ISO8601DateFormatter()
-    static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
-    
-    private init(){}
-    
-    // MARK: - Public Methods
+    let perPage = 10
+
+    private init(
+        photos: [Photo] = [],
+        lastLoadedPage: Int? = nil
+    ) {
+        self.photos = photos
+        self.lastLoadedPage = lastLoadedPage
+    }
+
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
-        guard task == nil else { return }
         let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
-        guard let token = oauth2TokenStorage.token else { return }
-        guard let request = imageTokenRequest(token, page: String(nextPage), perPage: "10") else { return }
-        let task = urlSession.objectTask(for: request){ [weak self] (result: Result<[PhotoResult], Error>) in
+        guard let request = makeFetchPhotosRequest(page: nextPage) else {
+            assertionFailure("Invalid request")
+            return
+        }
+        let session = URLSession.shared
+        let task = session.objectTask(for: request) { [weak self]
+            (result: Result<[PhotoResult], Error>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 switch result {
-                case .success(let body):
-                    body.forEach { photoResult in
-                        self.photos.append(
-                            Photo(
-                                id: photoResult.id,
-                                size: CGSize(
-                                    width: photoResult.width,
-                                    height: photoResult.height
-                                ),
-                                createdAt: self.dateFormatter.date(from:photoResult.createdAt ?? ""),
-                                welcomeDescription: photoResult.description,
-                                thumbImageURL: photoResult.urls?.thumbImageURL,
-                                largeImageURL: photoResult.urls?.largeImageURL,
-                                isLiked: photoResult.likedByUser ?? false
-                            )
+                case .success(let photoResult):
+                    let photo = photoResult.map { photoResult in
+                        return Photo(
+                            id: photoResult.id,
+                            size: CGSize(width: photoResult.width, height: photoResult.height),
+                            createdAt: self.dateFormatter(photoResult.createdAt),
+                            welcomeDescription: photoResult.description,
+                            thumbImageURL: photoResult.urls.thumb,
+                            largeImageURL: photoResult.urls.full,
+                            fullImageUrl: photoResult.urls.full,
+                            isLiked: photoResult.likedByUser
                         )
                     }
+                    self.photos.append(contentsOf: photo)
                     self.lastLoadedPage = nextPage
-                    NotificationCenter.default
-                        .post(
-                            name: ImagesListService.didChangeNotification,
-                            object: self,
-                            userInfo: ["Images" : self.photos])
-                    self.task = nil
-                case .failure:
-                    assertionFailure("No images")
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(
+                            name: ImageListService.DidChangeNotification,
+                            object: self
+                        )
+                        UIBlockingProgressHUD.dismiss()
+                    }
+                case .failure(let error):
+                    print("Failed to fetch photos: \(error.localizedDescription)")
+                    UIBlockingProgressHUD.dismiss()
                 }
             }
         }
-        self.task = task
         task.resume()
     }
-    
-    func changeLike(
-        photoId: String,
-        isLike: Bool,
-        _ completion: @escaping (Result<Bool, Error>) -> Void
-    ) {
-        assert(Thread.isMainThread)
-        task?.cancel()
-        if task != nil { return }
-        guard let token = oauth2TokenStorage.token else { return }
-        let request = isLike ? deleteLikeRequest(token, photoId: photoId) : likeRequest(token, photoId: photoId)
-        guard let request = request else { return }
-        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<LikeResult, Error>) in
+
+    private func dateFormatter(_ date: String) -> Date? {
+        let dateFormatter = ISO8601DateFormatter()
+        return dateFormatter.date(from: date)
+    }
+}
+
+extension ImageListService {
+    private func makeFetchPhotosRequest(page: Int) -> URLRequest? {
+        guard let token = OAuth2TokenStorage.shared.token else {
+            fatalError("Failed to create URL")
+        }
+        let baseUrl = DefaultBaseURL
+        let url = baseUrl.appendingPathComponent("photos")
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        components?.queryItems = [
+            URLQueryItem(name: "page", value: "\(page)"),
+            URLQueryItem(name: "per_page", value: "\(perPage)"),
+        ]
+        var request = URLRequest(url: components?.url ?? url)
+
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        return request
+    }
+}
+
+extension ImageListService {
+
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping(Result<Void, Error>) -> Void) {
+
+        guard let request = makeFetchLikeRequest(photoId: photoId, isLike: isLike) else {
+            assertionFailure("Invalid request")
+            return
+        }
+        let session = URLSession.shared
+        let task = session.objectTask(for: request) { [weak self]
+            (result: Result<LikeResponse, Error>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 switch result {
-                case .success(let body):
-                    let isLiked = body.photo?.likedByUser ?? false
+                case .success(let likeResponse):
                     if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                        let photo = self.photos[index]
-                        let newPhoto = Photo(
-                            id: photo.id,
-                            size: photo.size,
-                            createdAt: photo.createdAt,
-                            welcomeDescription: photo.welcomeDescription,
-                            thumbImageURL: photo.thumbImageURL,
-                            largeImageURL: photo.largeImageURL,
-                            isLiked: isLiked
-                        )
-                        self.photos[index] = newPhoto
+                        self.photos[index].isLiked = likeResponse.photo.likedByUser
                     }
-                    completion(.success(isLiked))
-                    self.task = nil
+                    completion(.success(()))
                 case .failure(let error):
+                    print("Failed to fetch likes: \(error.localizedDescription)")
                     completion(.failure(error))
                 }
             }
         }
-        self.task = task
         task.resume()
     }
-}
 
-// MARK: - Extension
-extension ImagesListService {
-    func imageTokenRequest(_ token: String, page: String, perPage: String) -> URLRequest? {
-        var request = URLRequest.makeHTTPRequest(
-            path: "/photos?page=\(page)&&per_page=\(perPage)",
-            httpMethod: "GET",
-            baseURL: URL(string: "\(KeyAndUrl.defaultBaseApiUrl)")!)
-        request?.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    private func makeFetchLikeRequest(photoId: String, isLike: Bool) -> URLRequest? {
+        guard let url = URL(string: "https://api.unsplash.com/photos/\(photoId)/like"),
+              let token = OAuth2TokenStorage.shared.token else {
+            fatalError("Failed to create URL")
+        }
+
+        var request = URLRequest(url: url)
+
+        request.httpMethod = isLike ? "POST" : "DELETE"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
         return request
-    }
-    
-    func likeRequest(_ token: String, photoId: String) -> URLRequest? {
-        var request = URLRequest.makeHTTPRequest(
-            path: "photos/\(photoId)/like",
-            httpMethod: "POST",
-            baseURL: URL(string: "\(KeyAndUrl.defaultBaseApiUrl)")!)
-        request?.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        return request
-    }
-    
-    func deleteLikeRequest(_ token: String, photoId: String) -> URLRequest? {
-        var request = URLRequest.makeHTTPRequest(
-            path: "photos/\(photoId)/like",
-            httpMethod: "DELETE",
-            baseURL: URL(string: "\(KeyAndUrl.defaultBaseApiUrl)")!)
-        request?.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        return request
-    }
-    
-    func withReplaced(itemAt: Int, newValue: Photo) -> [Photo] {
-        var item = ImagesListService.shared.photos
-        item.replaceSubrange(itemAt...itemAt, with: [newValue])
-        return item
     }
 }
