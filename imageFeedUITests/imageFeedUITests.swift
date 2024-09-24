@@ -5,10 +5,10 @@ final class ImageFeedUITests: XCTestCase {
     
     private let app = XCUIApplication()
     enum UserData {
-        static let username = "yerman.ibragimuly@gmail.com"
-        static let password = "Nevermore1394@"
-        static let fullName = "Yerman Ibragimuly"
-        static let userName = "@yermanibragimuly"
+        static let username = ""
+        static let password = ""
+        static let fullName = ""
+        static let userName = ""
     }
     
     override func setUpWithError() throws {
