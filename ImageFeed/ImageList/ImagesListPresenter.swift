@@ -1,84 +1,91 @@
 
-import Foundation
+import UIKit
 
-public protocol ImagesListPresenterProtocol {
+protocol ImagesListPresenterProtocol: AnyObject {
     var view: ImagesListViewControllerProtocol? { get set }
-    var allPhotos: Int { get }
+    var photos: [Photo] { get }
+    var imagesListService: ImagesListService { get }
     func viewDidLoad()
-    func checkAndLoadNextPhotosIfNeeded(indexPath: IndexPath)
-    func updateTableViewAnimated()
-    func imagesListCellDidTapLike(_ cell: ImagesListCell, indexPath: IndexPath)
-    func returnPhotosFromArray(indexPath: IndexPath) -> Photo?
+    func getCellHeight(indexPath: IndexPath, tableView: UITableView) -> CGFloat
+    func didTapLike(_ cell: ImagesListCell, tableView: UITableView)
+    func didUpdatePhotos()
 }
 
-final class ImagesListPresenter {
-    var photos: [Photo] = []
-    var allPhotos: Int {
-      photos.count
-    }
+final class ImagesListPresenter: ImagesListPresenterProtocol {
+    
+    // MARK: - Public Properties
+    
     weak var view: ImagesListViewControllerProtocol?
-    private let imageListService = ImageListService.shared
-    private var likedPhotoIds: Set<String> = []
-}
-
-extension ImagesListPresenter: ImagesListPresenterProtocol {
+    var photos: [Photo] = []
+    let imagesListService = ImagesListService.shared
+    private var imagesListServiceObserver: NSObjectProtocol?
+    
+    // MARK: - Public Methods
+    
     func viewDidLoad() {
-        view?.configureTableView()
-        configureImageListService()
+           imagesListServiceObserver = NotificationCenter.default.addObserver(
+               forName: ImagesListService.didChangeNotification,
+               object: nil,
+               queue: .main
+           ) { [weak self] _ in
+               guard let self = self else {return}
+               self.didUpdatePhotos()
+           }
+           imagesListService.fetchPhotosNextPage()
+       }
+    
+    func getCellHeight(indexPath: IndexPath, tableView: UITableView) -> CGFloat {
+        let photo = imagesListService.photos[indexPath.row]
+        
+        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
+        let imageWidth = photo.size.width
+        let scale = imageViewWidth / imageWidth
+        let cellHeight = photo.size.height * scale + imageInsets.top + imageInsets.bottom
+        
+        return cellHeight
     }
-
-    func checkAndLoadNextPhotosIfNeeded(indexPath: IndexPath) {
-        if indexPath.row + 1 == imageListService.photos.count {
-            imageListService.fetchPhotosNextPage()
-        }
-    }
-
-    func updateTableViewAnimated() {
-        let oldCount = photos.count
-        let newCount = imageListService.photos.count
-        photos = imageListService.photos
-        if oldCount != newCount {
-            var indexPaths = [IndexPath]()
-            view?.tableView.performBatchUpdates {
-                indexPaths = (oldCount..<newCount).map { i in
-                    IndexPath(row: i, section: 0)
-                }
-                view?.tableView.insertRows(at: indexPaths, with: .automatic)
-            } completion: { _ in }
-        }
-    }
-
-    func imagesListCellDidTapLike(_ cell: ImagesListCell, indexPath: IndexPath) {
+    
+    func didTapLike(_ cell: ImagesListCell, tableView: UITableView) {
+        
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
+        
         UIBlockingProgressHUD.show()
-
-        imageListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    self.photos[indexPath.row].isLiked.toggle()
-                    if self.photos[indexPath.row].isLiked {
-                        self.likedPhotoIds.insert(photo.id)
-                    } else {
-                        self.likedPhotoIds.remove(photo.id)
-                    }
-                    cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                case .failure(let error):
-                    print("Error accured while changing like: \(error)")
-                }
-                UIBlockingProgressHUD.dismiss()
+        
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
+            
+            switch result {
+            case .success:
+                self.photos[indexPath.row].isLiked.toggle()
+                cell.setIsLiked(self.photos[indexPath.row].isLiked)
+            case .failure(let error):
+                ErrorHandler.printError(error, origin: "ImagesListViewController.imageListCellDidTapLike")
+                // alert
+                let alert = UIAlertController(title: "Что-то пошло не так(",
+                                              message: "Попробуйте ещё раз позже",
+                                              preferredStyle: .alert)
+                let action = UIAlertAction(title: "OK", style: .default)
+                alert.addAction(action)
+                self.view?.showAlert(alert: alert)
             }
         }
+        
     }
-
-    func returnPhotosFromArray(indexPath: IndexPath) -> Photo? {
-        photos[indexPath.row]
+    
+    func didUpdatePhotos() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            let indexPaths = (oldCount..<newCount).map { i in
+                IndexPath(row: i, section: 0)
+            }
+            view?.updateTableViewAnimated(indexPaths)
+        }
     }
-}
-
-extension ImagesListPresenter {
-    func configureImageListService() {
-        imageListService.fetchPhotosNextPage()
-    }
+    
 }
