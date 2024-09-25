@@ -12,7 +12,7 @@ class Image_FeedUITests: XCTestCase {
     private let password = ""
     private let nameAndLastName = ""
     private let username = ""
-
+    
     
     // MARK: - Helpers
     private func typeTextWithDelay(_ text: String, textField: XCUIElement, characterDelay: TimeInterval = 0.1) {
@@ -41,13 +41,13 @@ class Image_FeedUITests: XCTestCase {
         app.launchArguments.append("TestingMode")
         app.launch()
     }
-
+    
     
     
     // MARK: - Tests
     
     func testAuth() throws {
-
+        
         app.buttons["Authenticate"].tap()
         
         let webView = app.webViews["UnsplashWebView"]
@@ -83,6 +83,9 @@ class Image_FeedUITests: XCTestCase {
         let cell = tablesQuery.children(matching: .cell).element(boundBy: 1)
         sleep(1)
         XCTAssertTrue(cell.waitForExistence(timeout: 10))
+        /*
+        Убедитесь что стоит только англисйская раскалдка клавиатуры.
+        */
     }
     
     func testFeed() throws {
@@ -101,7 +104,7 @@ class Image_FeedUITests: XCTestCase {
         
         let image = app.scrollViews.images.element(boundBy: 0)
         // Zoom in
-        image.pinch(withScale: 3, velocity: 1) 
+        image.pinch(withScale: 3, velocity: 1)
         // Zoom out
         image.pinch(withScale: 0.5, velocity: -1)
         
