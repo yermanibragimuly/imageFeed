@@ -8,10 +8,10 @@ class Image_FeedUITests: XCTestCase {
     }
     
     // Персональные данные
-    private let email = "erman.hardd@gmail.com"
-    private let password = "Nevermore1394@"
-    private let nameAndLastName = "Yerman Ibragimuly"
-    private let username = "@yermanski"
+    private let email = ""
+    private let password = ""
+    private let nameAndLastName = ""
+    private let username = ""
 
     
     // MARK: - Helpers
