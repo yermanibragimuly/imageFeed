@@ -72,7 +72,6 @@ class Image_FeedUITests: XCTestCase {
         passwordTextField.tap()
         sleep(1)
         typeTextWithDelay(password, textField: passwordTextField)
-        
         sleep(1)
         tapDoneButton()
         
@@ -84,12 +83,16 @@ class Image_FeedUITests: XCTestCase {
         sleep(1)
         XCTAssertTrue(cell.waitForExistence(timeout: 10))
         /*
-        Убедитесь что стоит только англисйская раскалдка клавиатуры.
-        */
+         Убедитесь что стоит только англисйская раскалдка клавиатуры.
+         */
     }
     
     func testFeed() throws {
-        sleep(10)
+        let table = app.descendants(matching: .table).element(boundBy: 0)
+        table.swipeUp()
+        sleep(1)
+        table.swipeDown()
+        sleep(3)
         
         let cellToLike = app.tables.descendants(matching: .cell).element(boundBy: 1)
         
@@ -99,7 +102,6 @@ class Image_FeedUITests: XCTestCase {
         sleep(5)
         
         cellToLike.tap()
-        
         sleep(10)
         
         let image = app.scrollViews.images.element(boundBy: 0)
@@ -110,31 +112,20 @@ class Image_FeedUITests: XCTestCase {
         
         let navBackButton = app.buttons["Backward"]
         navBackButton.tap()
-        
-        sleep(5)
-        
-        let cell = app.tables.children(matching: .cell).element(boundBy: 0)
-        cell.swipeUp()
         sleep(1)
     }
     
-    
     func testProfile() throws {
-        sleep(5)
-        
-        app.tabBars.buttons.element(boundBy: 1).tap()
-        
         sleep(3)
+        app.tabBars.buttons.element(boundBy: 1).tap()
         
         XCTAssertTrue(app.staticTexts[nameAndLastName].exists)
         XCTAssertTrue(app.staticTexts[username].exists)
-        sleep(1)
+        
         app.buttons["Logout"].tap()
         
-        sleep(3)
-        
         app.alerts["Пока, пока!"].scrollViews.otherElements.buttons["Да"].tap()
-        
-        sleep(5)
+        sleep(3)
+        XCTAssertTrue(app.buttons["Authenticate"].exists)
     }
 }
